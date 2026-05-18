@@ -3,156 +3,575 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Golden Kamuy Fan Log</title>
+  <title>STAR WARS FAN LOG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --red: #8B0000;
+      --red-bright: #CC0000;
+      --bg: #020408;
+      --bg2: #080e18;
+      --surface: rgba(10, 18, 30, 0.8);
+      --text: #D4C5A0;
+      --text-dim: #7a6e58;
+      --border: rgba(201, 168, 76, 0.25);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      margin: 0;
-      font-family: "Helvetica Neue", sans-serif;
-      background-color: #111;
-      color: #eee;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', 'Noto Sans JP', sans-serif;
+      overflow-x: hidden;
     }
 
+    /* STARFIELD */
+    #stars-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* HEADER */
     header {
-      padding: 20px;
-      text-align: center;
-      border-bottom: 1px solid #333;
+      position: relative;
+      z-index: 10;
+      padding: 0;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, rgba(2,4,8,0.98), rgba(2,4,8,0.85));
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      letter-spacing: 2px;
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 40px;
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+    }
+
+    .header-badge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .header-main {
+      text-align: center;
+      padding: 40px 20px 30px;
+    }
+
+    .site-eyebrow {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 6px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      opacity: 0.8;
+    }
+
+    .site-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(32px, 6vw, 64px);
+      font-weight: 900;
+      letter-spacing: 8px;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      text-shadow:
+        0 0 40px rgba(201,168,76,0.5),
+        0 0 80px rgba(201,168,76,0.2);
+      line-height: 1;
+    }
+
+    .site-title span {
+      color: var(--text);
+      font-size: 0.45em;
+      display: block;
+      letter-spacing: 10px;
+      margin-top: 8px;
+      opacity: 0.7;
+    }
+
+    .title-line {
+      width: 200px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 20px auto;
     }
 
     nav {
       display: flex;
       justify-content: center;
-      gap: 20px;
-      margin-top: 10px;
+      gap: 0;
+      padding: 0 0 20px;
     }
 
     nav a {
-      color: #aaa;
+      color: var(--text-dim);
       text-decoration: none;
-      font-size: 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 10px 30px;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+      position: relative;
     }
 
-    nav a:hover {
-      color: #fff;
+    nav a:hover, nav a.active {
+      color: var(--gold-light);
+      border-color: var(--border);
+      text-shadow: 0 0 20px rgba(201,168,76,0.6);
     }
 
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      padding: 80px 40px 100px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(ellipse, rgba(139,0,0,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .crawl-container {
+      max-width: 700px;
+      margin: 0 auto;
+      perspective: 300px;
+    }
+
+    .intro-text {
+      font-size: 17px;
+      line-height: 2;
+      color: var(--text-dim);
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    .intro-text strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* DECORATIVE ELEMENTS */
+    .deco-line {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 50px auto;
+      max-width: 500px;
+    }
+
+    .deco-line::before, .deco-line::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border));
+    }
+    .deco-line::after {
+      background: linear-gradient(to left, transparent, var(--border));
+    }
+
+    .deco-icon {
+      color: var(--gold);
+      font-size: 18px;
+      opacity: 0.6;
+    }
+
+    /* SECTIONS */
     .container {
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    .intro {
-      margin-bottom: 30px;
-      line-height: 1.6;
-      color: #ccc;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 40px 80px;
+      position: relative;
+      z-index: 5;
     }
 
     .section {
-      margin-bottom: 40px;
+      margin-bottom: 70px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .section-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      color: var(--gold);
+      opacity: 0.5;
+      letter-spacing: 2px;
     }
 
     .section h2 {
-      border-left: 4px solid #888;
-      padding-left: 10px;
-      margin-bottom: 15px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 5px;
+      color: var(--text);
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* POSTS */
+    .post-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
 
     .post {
-      margin-bottom: 15px;
-      padding: 10px;
-      background-color: #1a1a1a;
-      border-radius: 5px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.4s ease;
+    }
+
+    .post::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 0;
+      background: var(--gold);
+      transition: height 0.4s ease;
+    }
+
+    .post:hover {
+      border-color: rgba(201,168,76,0.5);
+      background: rgba(201,168,76,0.04);
+      transform: translateY(-2px);
+    }
+
+    .post:hover::before { height: 100%; }
+
+    .post-tag {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      opacity: 0.6;
+      margin-bottom: 10px;
+      text-transform: uppercase;
     }
 
     .post a {
       text-decoration: none;
-      color: #fff;
-      font-weight: bold;
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+      line-height: 1.4;
     }
+
+    .post:hover a { color: var(--gold-light); }
 
     .post p {
-      margin: 5px 0 0;
       font-size: 13px;
-      color: #aaa;
+      color: var(--text-dim);
+      line-height: 1.6;
     }
 
+    .post-date {
+      margin-top: 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      opacity: 0.5;
+    }
+
+    /* GALLERY GRID */
     .gallery {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+
+    .gallery-item {
+      aspect-ratio: 1;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gallery-item::after {
+      content: 'ILLUSTRATION';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+      opacity: 0.3;
+    }
+
+    .gallery-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease, opacity 0.4s ease;
+      opacity: 0.85;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.06);
+      opacity: 1;
+    }
+
+    .more-link {
+      display: inline-flex;
+      align-items: center;
       gap: 10px;
+      margin-top: 20px;
+      text-decoration: none;
+      color: var(--text-dim);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      transition: color 0.3s;
     }
 
-    .gallery img {
-      width: 100%;
-      border-radius: 5px;
+    .more-link:hover { color: var(--gold); }
+
+    .more-link::after {
+      content: '→';
+      font-size: 14px;
     }
 
+    /* FOOTER */
     footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid var(--border);
+      padding: 30px 40px;
       text-align: center;
-      padding: 20px;
-      border-top: 1px solid #333;
-      font-size: 12px;
-      color: #777;
+      background: rgba(2,4,8,0.9);
+    }
+
+    .footer-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      color: var(--gold);
+      letter-spacing: 6px;
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    footer p {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      opacity: 0.5;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero, .section { animation: fadeIn 0.8s ease both; }
+    .section:nth-child(2) { animation-delay: 0.1s; }
+    .section:nth-child(3) { animation-delay: 0.2s; }
+
+    /* SCAN LINE EFFECT */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    @media (max-width: 600px) {
+      .header-top { padding: 12px 20px; }
+      .site-title { font-size: 28px; letter-spacing: 4px; }
+      .container { padding: 0 20px 60px; }
+      .post-grid { grid-template-columns: 1fr; }
+      .gallery { grid-template-columns: repeat(2, 1fr); }
+      nav a { padding: 10px 16px; font-size: 10px; }
     }
   </style>
 </head>
 <body>
+  <canvas id="stars-canvas"></canvas>
 
   <header>
-    <h1>Star Wars Fan Log</h1>
+    <div class="header-top">
+      <span class="header-badge">A long time ago in a galaxy far, far away...</span>
+      <span class="header-badge">FAN SITE · NON-OFFICIAL</span>
+    </div>
+    <div class="header-main">
+      <div class="site-eyebrow">★ Fan Log ★</div>
+      <h1 class="site-title">
+        STAR WARS
+        <span>A Personal Chronicle</span>
+      </h1>
+      <div class="title-line"></div>
+    </div>
     <nav>
+      <a href="index.html" class="active">HOME</a>
       <a href="blog.html">BLOG</a>
       <a href="gallery.html">GALLERY</a>
       <a href="about.html">ABOUT</a>
     </nav>
   </header>
 
-  <div class="container">
-
-    <div class="intro">
-      <p>
-        このサイトは『Star Wars』について、好きなことを自由に語るための場所です。<br>
-        正しい解釈とかじゃなくて、「ここ好き」「なんか分からないけど良い」を大事にしてます。
+  <div class="hero">
+    <div class="crawl-container">
+      <p class="intro-text">
+        このサイトは<strong>『STAR WARS』</strong>について、<br>
+        好きなことを自由に語るための場所。<br><br>
+        正しい解釈とかじゃなくて、<br>
+        「ここ好き」「なんか分からないけど良い」を<br>
+        大事にしてます。
       </p>
     </div>
+    <div class="deco-line"><span class="deco-icon">✦</span></div>
+  </div>
 
+  <div class="container">
     <div class="section">
-      <h2>Latest Posts</h2>
-
-      <div class="post">
-        <a href="blog.html">第○話のこのシーンが好きすぎる</a>
-        <p>感情がぐちゃぐちゃになるやつ</p>
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2>Latest Posts</h2>
+        <div class="section-line"></div>
       </div>
-
-      <div class="post">
-        <a href="blog.html">この表情なんなんだろう</a>
-        <p>分からないけどめちゃくちゃ好き</p>
+      <div class="post-grid">
+        <div class="post">
+          <div class="post-tag">Episode · Review</div>
+          <a href="blog.html">このシーンが好きすぎる</a>
+          <p>感情がぐちゃぐちゃになるやつ。何度見ても同じ場所で泣いてる。</p>
+          <div class="post-date">2025 · MAY</div>
+        </div>
+        <div class="post">
+          <div class="post-tag">Character · Analysis</div>
+          <a href="blog.html">この表情なんなんだろう</a>
+          <p>分からないけどめちゃくちゃ好き。言葉より雄弁な一瞬の顔。</p>
+          <div class="post-date">2025 · APR</div>
+        </div>
+        <div class="post">
+          <div class="post-tag">Music · John Williams</div>
+          <a href="blog.html">このBGMの話をしたい</a>
+          <p>あのシーンにあの曲。完璧すぎて逆に怖い。</p>
+          <div class="post-date">2025 · MAR</div>
+        </div>
+        <div class="post">
+          <div class="post-tag">Rewatch · Thoughts</div>
+          <a href="blog.html">何周目かで気づいたこと</a>
+          <p>伏線だったのかこれ。気付いた瞬間鳥肌が立った。</p>
+          <div class="post-date">2025 · FEB</div>
+        </div>
       </div>
-
+      <a href="blog.html" class="more-link">All Posts</a>
     </div>
 
     <div class="section">
-      <h2>Illustration</h2>
-
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2>Illustration</h2>
+        <div class="section-line"></div>
+      </div>
       <div class="gallery">
-        <img src="img1.jpg" alt="">
-        <img src="img2.jpg" alt="">
-        <img src="img3.jpg" alt="">
+        <div class="gallery-item"><img src="img1.jpg" alt="" onerror="this.style.display='none'"></div>
+        <div class="gallery-item"><img src="img2.jpg" alt="" onerror="this.style.display='none'"></div>
+        <div class="gallery-item"><img src="img3.jpg" alt="" onerror="this.style.display='none'"></div>
       </div>
-
+      <a href="gallery.html" class="more-link">Gallery</a>
     </div>
-
   </div>
 
   <footer>
-    <p>© Fan Log</p>
+    <div class="footer-logo">★ SW ★</div>
+    <p>© Fan Log — Star Wars is a trademark of Lucasfilm Ltd.</p>
   </footer>
 
+  <script>
+    // STARFIELD
+    const canvas = document.getElementById('stars-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < 200; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.2,
+          o: Math.random() * 0.7 + 0.1,
+          twinkle: Math.random() * 0.02 + 0.005,
+          dir: Math.random() > 0.5 ? 1 : -1
+        });
+      }
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        s.o += s.twinkle * s.dir;
+        if (s.o > 0.8 || s.o < 0.1) s.dir *= -1;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(220,210,180,${s.o})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+
+    window.addEventListener('resize', () => { resize(); initStars(); });
+    resize();
+    initStars();
+    drawStars();
+  </script>
 </body>
 </html>
