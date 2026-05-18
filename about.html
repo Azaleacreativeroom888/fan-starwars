@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABOUT — STAR WARS FAN LOG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --bg: #020408;
+      --bg2: #080e18;
+      --surface: rgba(10, 18, 30, 0.8);
+      --text: #D4C5A0;
+      --text-dim: #7a6e58;
+      --border: rgba(201, 168, 76, 0.25);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', 'Noto Sans JP', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    #stars-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    header {
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, rgba(2,4,8,0.98), rgba(2,4,8,0.85));
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 40px;
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+    }
+
+    .header-badge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+    }
+
+    .header-main {
+      text-align: center;
+      padding: 30px 20px 20px;
+    }
+
+    .site-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      color: var(--gold-light);
+      text-shadow: 0 0 40px rgba(201,168,76,0.4);
+    }
+
+    .site-title a { text-decoration: none; color: inherit; }
+
+    .title-line {
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 14px auto;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      padding: 0 0 16px;
+    }
+
+    nav a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 10px 30px;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--gold-light);
+      border-color: var(--border);
+      text-shadow: 0 0 20px rgba(201,168,76,0.6);
+    }
+
+    /* ABOUT HERO */
+    .about-hero {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      padding: 80px 40px 60px;
+    }
+
+    .page-eyebrow {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 6px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      opacity: 0.7;
+    }
+
+    .page-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      color: var(--text);
+    }
+
+    /* AVATAR AREA */
+    .avatar-ring {
+      width: 100px;
+      height: 100px;
+      margin: 40px auto 0;
+      position: relative;
+    }
+
+    .avatar-ring::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      animation: rotate 12s linear infinite;
+    }
+
+    .avatar-ring::after {
+      content: '';
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      border: 1px solid rgba(201,168,76,0.1);
+      animation: rotate 20s linear infinite reverse;
+    }
+
+    .avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--bg2);
+      border: 1px solid rgba(201,168,76,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 40px 100px;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* ABOUT BLOCK */
+    .about-block {
+      margin-bottom: 50px;
+      animation: fadeIn 0.7s ease both;
+    }
+
+    .about-block:nth-child(2) { animation-delay: 0.1s; }
+    .about-block:nth-child(3) { animation-delay: 0.2s; }
+    .about-block:nth-child(4) { animation-delay: 0.3s; }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .block-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      color: var(--gold);
+      opacity: 0.5;
+      letter-spacing: 2px;
+    }
+
+    .block-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: var(--text);
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    .about-text {
+      font-size: 16px;
+      line-height: 2.2;
+      color: var(--text-dim);
+      font-weight: 300;
+    }
+
+    .about-text strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* DATA TABLE */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table tr {
+      border-bottom: 1px solid rgba(201,168,76,0.08);
+    }
+
+    .data-table tr:last-child { border-bottom: none; }
+
+    .data-table td {
+      padding: 14px 0;
+      font-size: 14px;
+    }
+
+    .data-table td:first-child {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      opacity: 0.6;
+      text-transform: uppercase;
+      width: 140px;
+    }
+
+    .data-table td:last-child {
+      color: var(--text-dim);
+    }
+
+    /* FAVORITES */
+    .fav-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+    }
+
+    .fav-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .fav-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(to right, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .fav-item:hover {
+      background: rgba(201,168,76,0.04);
+      border-color: rgba(201,168,76,0.4);
+    }
+
+    .fav-item:hover::before { opacity: 1; }
+
+    .fav-rank {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      color: var(--gold);
+      opacity: 0.4;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .fav-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .fav-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* MANIFESTO */
+    .manifesto {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 50px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .manifesto::before, .manifesto::after {
+      content: '';
+      position: absolute;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.06), transparent);
+    }
+
+    .manifesto::before { top: -30px; left: -30px; }
+    .manifesto::after { bottom: -30px; right: -30px; }
+
+    .manifesto blockquote {
+      font-size: 20px;
+      line-height: 2;
+      color: var(--text);
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      font-style: italic;
+      position: relative;
+      z-index: 1;
+    }
+
+    .manifesto blockquote strong {
+      color: var(--gold);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    .manifesto cite {
+      display: block;
+      margin-top: 24px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: var(--text-dim);
+      opacity: 0.5;
+      font-style: normal;
+    }
+
+    /* CONTACT */
+    .contact-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-dim);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      padding: 12px 24px;
+      transition: all 0.3s;
+    }
+
+    .contact-link:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.05);
+    }
+
+    footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid var(--border);
+      padding: 30px 40px;
+      text-align: center;
+      background: rgba(2,4,8,0.9);
+    }
+
+    .footer-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      color: var(--gold);
+      letter-spacing: 6px;
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    footer p {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      opacity: 0.5;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .header-top { padding: 12px 20px; }
+      .container { padding: 0 20px 60px; }
+      .fav-list { grid-template-columns: 1fr; }
+      .manifesto { padding: 30px 24px; }
+      nav a { padding: 10px 16px; font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars-canvas"></canvas>
+
+  <header>
+    <div class="header-top">
+      <span class="header-badge">A long time ago in a galaxy far, far away...</span>
+      <span class="header-badge">FAN SITE · NON-OFFICIAL</span>
+    </div>
+    <div class="header-main">
+      <h1 class="site-title"><a href="index.html">STAR WARS FAN LOG</a></h1>
+      <div class="title-line"></div>
+    </div>
+    <nav>
+      <a href="index.html">HOME</a>
+      <a href="blog.html">BLOG</a>
+      <a href="gallery.html">GALLERY</a>
+      <a href="about.html" class="active">ABOUT</a>
+    </nav>
+  </header>
+
+  <div class="about-hero">
+    <div class="page-eyebrow">Personnel File</div>
+    <h2 class="page-title">ABOUT</h2>
+    <div class="avatar-ring">
+      <div class="avatar-inner">⚔</div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="about-block">
+      <div class="block-header">
+        <span class="block-num">01</span>
+        <h2>このサイトについて</h2>
+      </div>
+      <p class="about-text">
+        スター・ウォーズが好きで、好きなことを自由に語りたくて作ったサイトです。<br>
+        <strong>正しい解釈</strong>とかじゃなくて、<strong>「ここ好き」</strong>「なんか分からないけど良い」を大事にしてます。<br><br>
+        考察とか分析とか難しいことよりも、<br>
+        「このシーンやばい」「この表情なんなんだろう」みたいなことを<br>
+        丁寧に言語化したいと思っています。
+      </p>
+    </div>
+
+    <div class="about-block">
+      <div class="block-header">
+        <span class="block-num">02</span>
+        <h2>Profile Data</h2>
+      </div>
+      <table class="data-table">
+        <tr>
+          <td>Name</td>
+          <td>Fan Log Owner</td>
+        </tr>
+        <tr>
+          <td>Location</td>
+          <td>A galaxy nearby</td>
+        </tr>
+        <tr>
+          <td>Side</td>
+          <td>複雑なやつが好き</td>
+        </tr>
+        <tr>
+          <td>First Contact</td>
+          <td>エピソードIVから入った</td>
+        </tr>
+        <tr>
+          <td>Rewatch Count</td>
+          <td>数えるの諦めた</td>
+        </tr>
+        <tr>
+          <td>Weapon</td>
+          <td>言葉と絵</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="about-block">
+      <div class="block-header">
+        <span class="block-num">03</span>
+        <h2>Favorites</h2>
+      </div>
+      <div class="fav-list">
+        <div class="fav-item">
+          <div class="fav-rank">EPISODE</div>
+          <div class="fav-title">The Empire Strikes Back</div>
+          <div class="fav-desc">完璧すぎる続編。あの衝撃は一生忘れない。</div>
+        </div>
+        <div class="fav-item">
+          <div class="fav-rank">CHARACTER</div>
+          <div class="fav-title">まだ決めてない</div>
+          <div class="fav-desc">好きすぎてひとりに絞れない問題。</div>
+        </div>
+        <div class="fav-item">
+          <div class="fav-rank">SCENE</div>
+          <div class="fav-title">Binary Sunset</div>
+          <div class="fav-desc">あの夕焼けのシーン。言葉にならない。</div>
+        </div>
+        <div class="fav-item">
+          <div class="fav-rank">MUSIC</div>
+          <div class="fav-title">The Imperial March</div>
+          <div class="fav-desc">流れるだけで全てが分かる天才的なテーマ。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-block">
+      <div class="block-header">
+        <span class="block-num">04</span>
+        <h2>Manifesto</h2>
+      </div>
+      <div class="manifesto">
+        <blockquote>
+          正解とか不正解とかじゃなくて、<br>
+          <strong>「好き」という気持ち</strong>が全てだと思ってます。<br><br>
+          難しいことは分からなくていい。<br>
+          あのシーンで泣いた自分の感情は<strong>本物</strong>だから。
+        </blockquote>
+        <cite>— Fan Log Owner, 2025</cite>
+      </div>
+    </div>
+
+    <div class="about-block">
+      <div class="block-header">
+        <span class="block-num">05</span>
+        <h2>Contact</h2>
+      </div>
+      <p class="about-text" style="margin-bottom:24px;">
+        語りたい人、感想くれる人、大歓迎です。<br>
+        同じ気持ちの人がいたら嬉しいな。
+      </p>
+      <div class="contact-links">
+        <a href="#" class="contact-link">✉ Message</a>
+        <a href="#" class="contact-link">𝕏 Twitter</a>
+        <a href="#" class="contact-link">◈ Pixiv</a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-logo">★ SW ★</div>
+    <p>© Fan Log — Star Wars is a trademark of Lucasfilm Ltd.</p>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('stars-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < 200; i++)
+        stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+          r: Math.random()*1.2, o: Math.random()*0.7+0.1,
+          twinkle: Math.random()*0.02+0.005, dir: Math.random()>0.5?1:-1 });
+    }
+    function drawStars() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      stars.forEach(s => {
+        s.o += s.twinkle*s.dir;
+        if(s.o>0.8||s.o<0.1) s.dir*=-1;
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(220,210,180,${s.o})`; ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+    window.addEventListener('resize',()=>{resize();initStars();});
+    resize(); initStars(); drawStars();
+  </script>
+</body>
+</html>
