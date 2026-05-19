@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLOG — STAR WARS FAN LOG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --bg: #020408;
+      --surface: rgba(10, 18, 30, 0.85);
+      --text: #D4C5A0;
+      --text-dim: #7a6e58;
+      --border: rgba(201, 168, 76, 0.2);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', 'Noto Sans JP', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    #stars-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    header {
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, rgba(2,4,8,0.98), rgba(2,4,8,0.85));
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 40px;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+    }
+
+    .header-badge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+    }
+
+    .header-main {
+      text-align: center;
+      padding: 30px 20px 20px;
+    }
+
+    .site-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      color: var(--gold-light);
+      text-shadow: 0 0 40px rgba(201,168,76,0.4);
+    }
+
+    .site-title a { text-decoration: none; color: inherit; }
+
+    .title-line {
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 14px auto;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      padding: 0 0 16px;
+    }
+
+    nav a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 10px 30px;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--gold-light);
+      border-color: var(--border);
+      text-shadow: 0 0 20px rgba(201,168,76,0.5);
+    }
+
+    .page-hero {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      padding: 50px 40px 30px;
+    }
+
+    .page-eyebrow {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 6px;
+      color: var(--gold);
+      opacity: 0.7;
+      margin-bottom: 10px;
+    }
+
+    .page-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      color: var(--text);
+    }
+
+    .feed-wrap {
+      position: relative;
+      z-index: 5;
+      max-width: 620px;
+      margin: 30px auto 0;
+      padding: 0 20px 100px;
+    }
+
+    .diary-card {
+      position: relative;
+      margin-bottom: 3px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid transparent;
+      padding: 28px 28px 24px;
+      transition: border-left-color 0.3s, background 0.3s;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .diary-card:nth-child(1) { animation-delay: 0.00s; }
+    .diary-card:nth-child(2) { animation-delay: 0.06s; }
+    .diary-card:nth-child(3) { animation-delay: 0.12s; }
+    .diary-card:nth-child(4) { animation-delay: 0.18s; }
+    .diary-card:nth-child(5) { animation-delay: 0.24s; }
+    .diary-card:nth-child(6) { animation-delay: 0.30s; }
+    .diary-card:nth-child(7) { animation-delay: 0.36s; }
+
+    .diary-card:hover {
+      border-left-color: var(--gold);
+      background: rgba(201,168,76,0.03);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .card-tag {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      opacity: 0.65;
+      text-transform: uppercase;
+      border: 1px solid rgba(201,168,76,0.25);
+      padding: 3px 8px;
+    }
+
+    .card-date {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      opacity: 0.45;
+      margin-left: auto;
+    }
+
+    .card-body {
+      font-size: 15px;
+      line-height: 1.95;
+      color: var(--text);
+      font-weight: 300;
+      letter-spacing: 0.2px;
+      white-space: pre-wrap;
+    }
+
+    .load-more-wrap {
+      text-align: center;
+      padding-top: 30px;
+    }
+
+    .load-more {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      background: transparent;
+      padding: 12px 32px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .load-more:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(201,168,76,0.05);
+    }
+
+    footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid var(--border);
+      padding: 30px 40px;
+      text-align: center;
+      background: rgba(2,4,8,0.9);
+    }
+
+    .footer-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      color: var(--gold);
+      letter-spacing: 6px;
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    footer p {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      opacity: 0.5;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .header-top { padding: 12px 20px; }
+      .feed-wrap { padding: 0 12px 80px; }
+      .diary-card { padding: 22px 18px 18px; }
+      nav a { padding: 10px 16px; font-size: 10px; }
+      .header-badge:last-child { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars-canvas"></canvas>
+
+  <header>
+    <div class="header-top">
+      <span class="header-badge">A long time ago in a galaxy far, far away...</span>
+      <span class="header-badge">FAN SITE · NON-OFFICIAL</span>
+    </div>
+    <div class="header-main">
+      <h1 class="site-title"><a href="index.html">STAR WARS FAN LOG</a></h1>
+      <div class="title-line"></div>
+    </div>
+    <nav>
+      <a href="index.html">HOME</a>
+      <a href="blog.html" class="active">BLOG</a>
+      <a href="gallery.html">GALLERY</a>
+      <a href="about.html">ABOUT</a>
+    </nav>
+  </header>
+
+  <div class="page-hero">
+    <div class="page-eyebrow">Transmission Log</div>
+    <h2 class="page-title">BLOG</h2>
+  </div>
+
+  <div class="feed-wrap">
+
+    <div class="diary-card">
+      <div class="card-top">
+        <span class="card-tag">Rewatch</span>
+        <span class="card-date">2025 · MAY · 18</span>
+      </div>
+      <div class="card-body">また見てしまった。
+何周目か分からないけど、やっぱりあのシーンで止まる。
+照明の当たり方、BGMの入るタイミング、全部が完璧すぎて。
+「なんでこんなうまいんだ」って毎回思う。
+永遠に答えが出ない問いを抱えたまま生きていく。</div>
+    </div>
+
+    <div class="diary-card">
+      <div class="card-top">
+        <span class="card-tag">Character</span>
+        <span class="card-date">2025 · MAY · 14</span>
+      </div>
+      <div class="card-body">この表情、なんなんだろう。
+言葉は何もないのに全部伝わってくる。
+役者ってすごい。それ以外の言葉が出てこない。
+分からないけど好き、を大事にしたい。
+考えすぎると壊れる気がするから。</div>
+    </div>
+
+    <div class="diary-card">
+      <div class="card-top">
+        <span class="card-tag">Music</span>
+        <span class="card-date">2025 · MAY · 09</span>
+      </div>
+      <div class="card-body">John Williamsの話がしたい。
+あのシーンにあの曲を持ってくる判断、天才すぎる。
+完璧すぎて逆に怖い。
+映像と音楽が同時に正解を出してる瞬間ってあるんだなと思った。
+そういうのを「映画」って呼ぶんだろうな。</div>
+    </div>
+
+    <div class="diary-card">
+      <div class="card-top">
+        <span class="card-tag">Theory</span>
+        <span class="card-date">2025 · APR · 28</span>
+      </div>
+      <div class="card-body">あの選択の意味、ずっと考えてた。
+正解なんてないんだけど、自分なりの答えが出てきた気がする。
+でも誰かに話したら崩れそうで怖くて言えない。
+そういう「自分だけの解釈」を持ってるのが、たぶん好きなのかもしれない。</div>
+    </div>
+
+    <div class="diary-card">
+      <div class="card-top">
+        <span class="card-tag">Episode</span>
+        <span class="card-date">2025 · APR · 15</span>
+      </div>
+      <div class="card-body">何周目かで初めて気づいたことがある。
+ずっとそこにあったのに見えてなかった。
+伏線だったのかこれ、って鳥肌が立った。
+分かってから見ると全然違う顔してる。
+同じ作品が無限にある感じ、すごく好き。</div>
+    </div>
+
+    <div class="diary-card">
+      <div class="card-top">
+        <span class="card-tag">Character</span>
+        <span class="card-date">2025 · MAR · 30</span>
+      </div>
+      <div class="card-body">このキャラが好きな理由、うまく言語化できない。
+「強いから」でも「かっこいいから」でもなくて。
+なんか、この人の選択の仕方が好きなんだと思う。
+正しくないかもしれないのに、それでも選ぶ感じ。
+それが全部好きなんだよな。</div>
+    </div>
+
+    <div class="diary-card">
+      <div class="card-top">
+        <span class="card-tag">Rewatch</span>
+        <span class="card-date">2025 · MAR · 12</span>
+      </div>
+      <div class="card-body">Binary Sunsetのシーン、やっぱり泣いた。
+何も起きてないのに泣ける。
+ただ夕日を見てるだけなのに、全部が詰まってる。
+言葉でこれを超えるものを作るのは無理だと思う。
+映画ってこういうことができるんだよ。</div>
+    </div>
+
+    <div class="load-more-wrap">
+      <button class="load-more" onclick="loadMore()">Load More</button>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-logo">★ SW ★</div>
+    <p>© Fan Log — Star Wars is a trademark of Lucasfilm Ltd.</p>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('stars-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < 200; i++)
+        stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+          r: Math.random()*1.2, o: Math.random()*0.7+0.1,
+          t: Math.random()*0.02+0.005, d: Math.random()>0.5?1:-1 });
+    }
+    function drawStars() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      stars.forEach(s => {
+        s.o += s.t*s.d;
+        if(s.o>0.8||s.o<0.1) s.d*=-1;
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(220,210,180,${s.o})`; ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+    window.addEventListener('resize',()=>{resize();initStars();});
+    resize(); initStars(); drawStars();
+
+    const extra = [
+      { tag:'Theory', date:'2025 · FEB · 22',
+        body:`あのセリフ、初めて聞いたとき意味が分からなかった。\n今なら分かる気がする。\n「分かる」って怖い言葉だなとも思う。\n成長してるのか、慣れてしまっただけなのか。\nたぶん両方。` },
+      { tag:'Music', date:'2025 · FEB · 08',
+        body:`The Imperial Marchが流れるだけで画面に緊張感が走る。\nメロディひとつであそこまで情報量があるって何事。\n映画音楽の天才がいるとしたらこの人だと思う。\n理屈じゃなく体が反応する感じ、すごく好き。` },
+    ];
+
+    function loadMore() {
+      const feed = document.querySelector('.feed-wrap');
+      const btn = document.querySelector('.load-more-wrap');
+      extra.forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'diary-card';
+        card.innerHTML = `
+          <div class="card-top">
+            <span class="card-tag">${d.tag}</span>
+            <span class="card-date">${d.date}</span>
+          </div>
+          <div class="card-body">${d.body}</div>`;
+        feed.insertBefore(card, btn);
+      });
+      btn.style.display = 'none';
+    }
+  </script>
+</body>
+</html>
