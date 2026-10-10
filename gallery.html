@@ -400,6 +400,137 @@
       opacity: 0.5;
     }
 
+    /* REPORT LINK BOX */
+    .report-section {
+      margin-top: 50px;
+    }
+
+    .report-section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .report-section-header .sec-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 5px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .report-section-header .sec-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .report-link-box {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      overflow: hidden;
+      transition: border-color 0.3s, background 0.3s;
+      position: relative;
+    }
+
+    .report-link-box:hover {
+      border-color: rgba(201,168,76,0.6);
+      background: rgba(201,168,76,0.04);
+    }
+
+    .report-link-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(to right, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .report-link-box:hover::before { opacity: 1; }
+
+    .report-badge {
+      background: rgba(201,168,76,0.12);
+      border-right: 1px solid var(--border);
+      padding: 28px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-width: 110px;
+      transition: background 0.3s;
+    }
+
+    .report-link-box:hover .report-badge {
+      background: rgba(201,168,76,0.18);
+    }
+
+    .report-badge-icon {
+      font-size: 26px;
+      opacity: 0.7;
+    }
+
+    .report-badge-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .report-body {
+      padding: 24px 32px;
+      flex: 1;
+    }
+
+    .report-eyebrow {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      opacity: 0.55;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .report-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+      transition: color 0.3s;
+    }
+
+    .report-link-box:hover .report-title { color: var(--gold-light); }
+
+    .report-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .report-arrow {
+      padding: 0 28px;
+      font-size: 22px;
+      color: var(--gold);
+      opacity: 0.3;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .report-link-box:hover .report-arrow {
+      opacity: 0.9;
+      transform: translateX(4px);
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
@@ -551,6 +682,27 @@
       </div>
 
     </div>
+
+    <!-- REPORT LINK BOX -->
+    <div class="report-section">
+      <div class="report-section-header">
+        <span class="sec-label">Special Report</span>
+        <div class="sec-line"></div>
+      </div>
+      <a href="report1.html" class="report-link-box">
+        <div class="report-badge">
+          <div class="report-badge-icon">★</div>
+          <div class="report-badge-label">Report</div>
+        </div>
+        <div class="report-body">
+          <div class="report-eyebrow">Character Ranking · 01</div>
+          <div class="report-title">好きなキャラクターランキング</div>
+          <div class="report-desc">思い入れのあるキャラクターを順番にまとめました。選ぶのが難しすぎた。</div>
+        </div>
+        <div class="report-arrow">→</div>
+      </a>
+    </div>
+
   </div>
 
   <!-- LIGHTBOX -->
