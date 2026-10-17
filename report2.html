@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用語辞典 — STAR WARS FAN LOG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --bg: #020408;
+      --bg2: #080e18;
+      --surface: rgba(10, 18, 30, 0.85);
+      --text: #D4C5A0;
+      --text-dim: #7a6e58;
+      --border: rgba(201, 168, 76, 0.2);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', 'Noto Sans JP', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    #stars-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, rgba(2,4,8,0.98), rgba(2,4,8,0.85));
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 40px;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+    }
+
+    .header-badge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+    }
+
+    .header-main {
+      text-align: center;
+      padding: 30px 20px 20px;
+    }
+
+    .site-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      color: var(--gold-light);
+      text-shadow: 0 0 40px rgba(201,168,76,0.4);
+    }
+
+    .site-title a { text-decoration: none; color: inherit; }
+
+    .title-line {
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 14px auto;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      padding: 0 0 16px;
+    }
+
+    nav a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 10px 30px;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover {
+      color: var(--gold-light);
+      border-color: var(--border);
+      text-shadow: 0 0 20px rgba(201,168,76,0.5);
+    }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      padding: 60px 40px 40px;
+    }
+
+    .page-eyebrow {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 6px;
+      color: var(--gold);
+      opacity: 0.7;
+      margin-bottom: 12px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+
+    .page-note {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
+    .hero-divider {
+      width: 200px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 30px auto 0;
+    }
+
+    /* ── CONTAINER ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 50px 30px 100px;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* ── CATEGORY FILTER ── */
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .filter-btn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 2px;
+      padding: 6px 16px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.3s;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: rgba(201,168,76,0.1);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      margin-top: 48px;
+    }
+
+    .section-label:first-of-type { margin-top: 0; }
+
+    .section-label span {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 5px;
+      color: var(--gold);
+      opacity: 0.6;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── GLOSSARY ENTRY ── */
+    .entry {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      background: var(--surface);
+      transition: background 0.3s, border-color 0.3s;
+      animation: fadeUp 0.5s ease both;
+      position: relative;
+    }
+
+    .entry:last-of-type,
+    .entry:last-child {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .entry::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px; height: 0;
+      background: var(--gold);
+      transition: height 0.35s ease;
+    }
+
+    .entry:hover {
+      background: rgba(201,168,76,0.03);
+      border-color: rgba(201,168,76,0.35);
+    }
+
+    .entry:hover::before { height: 100%; }
+
+    /* left column — term info */
+    .entry-left {
+      padding: 22px 24px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    /* ① 用語（日本語） */
+    .term-ja {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+      letter-spacing: 0.3px;
+    }
+
+    .term-ja::before {
+      content: '① ';
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      opacity: 0.55;
+      vertical-align: middle;
+    }
+
+    /* ② 英語 */
+    .term-en {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      opacity: 0.6;
+      text-transform: uppercase;
+    }
+
+    .term-en::before {
+      content: '② ';
+      opacity: 0.7;
+    }
+
+    /* ③ 初登場エピソード */
+    .term-ep {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      opacity: 0.5;
+      text-transform: uppercase;
+    }
+
+    .term-ep::before {
+      content: '③ ';
+      color: var(--gold);
+      opacity: 0.6;
+    }
+
+    /* right column — description */
+    .entry-right {
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* ④ 説明 */
+    .term-desc {
+      font-size: 14px;
+      line-height: 1.85;
+      color: var(--text-dim);
+      font-weight: 300;
+    }
+
+    .term-desc::before {
+      content: '④ ';
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      opacity: 0.55;
+      vertical-align: middle;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid var(--border);
+      padding: 30px 40px;
+      text-align: center;
+      background: rgba(2,4,8,0.9);
+    }
+
+    .footer-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      color: var(--gold);
+      letter-spacing: 6px;
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    footer p {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      opacity: 0.5;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 640px) {
+      .header-top { padding: 12px 20px; }
+      .header-badge:last-child { display: none; }
+      nav a { padding: 10px 14px; font-size: 10px; }
+      .container { padding: 40px 16px 80px; }
+      .entry { grid-template-columns: 1fr; }
+      .entry-left { border-right: none; border-bottom: 1px solid var(--border); padding: 18px 18px 14px; }
+      .entry-right { padding: 14px 18px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars-canvas"></canvas>
+
+  <header>
+    <div class="header-top">
+      <span class="header-badge">A long time ago in a galaxy far, far away...</span>
+      <span class="header-badge">FAN SITE · NON-OFFICIAL</span>
+    </div>
+    <div class="header-main">
+      <h1 class="site-title"><a href="index.html">STAR WARS FAN LOG</a></h1>
+      <div class="title-line"></div>
+    </div>
+    <nav>
+      <a href="index.html">HOME</a>
+      <a href="blog.html">BLOG</a>
+      <a href="gallery.html">GALLERY</a>
+      <a href="about.html">ABOUT</a>
+    </nav>
+  </header>
+
+  <div class="page-hero">
+    <div class="page-eyebrow">Special Report · Glossary</div>
+    <h2 class="page-title">スターウォーズ用語辞典</h2>
+    <p class="page-note">知っておきたい用語を独断と偏愛でまとめました。</p>
+    <div class="hero-divider"></div>
+  </div>
+
+  <div class="container">
+
+    <div class="filters">
+      <button class="filter-btn active">All</button>
+      <button class="filter-btn">フォース</button>
+      <button class="filter-btn">組織・勢力</button>
+      <button class="filter-btn">兵器・技術</button>
+      <button class="filter-btn">星・場所</button>
+      <button class="filter-btn">種族</button>
+    </div>
+
+    <!-- フォース -->
+    <div class="section-label"><span>フォース</span></div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">フォース</div>
+        <div class="term-en">The Force</div>
+        <div class="term-ep">Ep.IV A New Hope</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">銀河に存在するすべての生き物が生み出すエネルギー場。ジェダイやシスがその力を利用する。ライト・サイドとダーク・サイドの二面性を持つ。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ライトサイド</div>
+        <div class="term-en">Light Side of the Force</div>
+        <div class="term-ep">Ep.IV A New Hope</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">フォースの光明面。平和・知識・守護を重んじるジェダイが歩む道。感情に流されず冷静さを保つことが求められる。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ダークサイド</div>
+        <div class="term-en">Dark Side of the Force</div>
+        <div class="term-ep">Ep.IV A New Hope</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">フォースの暗黒面。怒り・恐れ・憎しみといった強い感情を燃料にする。シスが使う力であり、一度足を踏み入れると戻るのは容易ではない。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ミディクロリアン</div>
+        <div class="term-en">Midi-chlorians</div>
+        <div class="term-ep">Ep.I The Phantom Menace</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">生命体の細胞内に共生する微小な存在。フォースとの繋がりを媒介し、その数値が高いほどフォースの感受性が強いとされる。</div>
+      </div>
+    </div>
+
+    <!-- 組織・勢力 -->
+    <div class="section-label"><span>組織・勢力</span></div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ジェダイ評議会</div>
+        <div class="term-en">Jedi Council</div>
+        <div class="term-ep">Ep.I The Phantom Menace</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">ジェダイ騎士団の最高意思決定機関。コルサントのジェダイ・テンプルに置かれ、12名のマスターで構成される。共和国の守護者として銀河の平和を担った。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">シス</div>
+        <div class="term-en">Sith</div>
+        <div class="term-ep">Ep.I The Phantom Menace</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">ダークサイドを用いる古代の組織。「常に二人、師と弟子」というルール（二人の掟）のもとで存続してきた。銀河征服を長年にわたり画策した。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">銀河帝国</div>
+        <div class="term-en">Galactic Empire</div>
+        <div class="term-ep">Ep.III Revenge of the Sith</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">パルパティーン皇帝が銀河共和国を改編して樹立した独裁国家。強大な軍事力で銀河を支配したが、反乱同盟軍との戦いの末に崩壊する。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">反乱同盟軍</div>
+        <div class="term-en">Rebel Alliance</div>
+        <div class="term-ep">Ep.IV A New Hope</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">銀河帝国に抵抗するために結成された組織。各地のレジスタンス勢力が集結し、デス・スターの破壊やエンドアの戦いなどで帝国に打撃を与えた。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ファースト・オーダー</div>
+        <div class="term-en">First Order</div>
+        <div class="term-ep">Ep.VII The Force Awakens</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">帝国崩壊後に残党から生まれた軍事組織。銀河帝国の思想を受け継ぎ、新共和国に対抗するべく勢力を拡大した。</div>
+      </div>
+    </div>
+
+    <!-- 兵器・技術 -->
+    <div class="section-label"><span>兵器・技術</span></div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ライトセーバー</div>
+        <div class="term-en">Lightsaber</div>
+        <div class="term-ep">Ep.IV A New Hope</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">プラズマの刃を持つエネルギー剣。ジェダイやシスが用いる象徴的な武器。刃の色はカイバークリスタルの共鳴によって決まり、使い手の在り方を反映するとも言われる。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">デス・スター</div>
+        <div class="term-en">Death Star</div>
+        <div class="term-ep">Ep.IV A New Hope</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">惑星を一撃で破壊できるスーパーレーザーを搭載した、直径120km超の宇宙要塞。銀河帝国による恐怖支配の象徴として建造された。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ハイパースペース</div>
+        <div class="term-en">Hyperspace</div>
+        <div class="term-ep">Ep.IV A New Hope</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">通常空間とは異なる次元を利用した超光速航法。ハイパードライブを搭載した宇宙船が銀河間の長距離移動に使用する。航路計算を誤ると致命的な事故につながる。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">フォース・ライトニング</div>
+        <div class="term-en">Force Lightning</div>
+        <div class="term-ep">Ep.VI Return of the Jedi</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">ダークサイドの使い手が放つ電撃。指先から放出され、対象を電撃と苦痛で無力化する。パルパティーン皇帝が多用したことで印象深い技術となった。</div>
+      </div>
+    </div>
+
+    <!-- 星・場所 -->
+    <div class="section-label"><span>星・場所</span></div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">タトゥイーン</div>
+        <div class="term-en">Tatooine</div>
+        <div class="term-ep">Ep.IV A New Hope</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">外縁部に位置する砂漠の惑星。二つの太陽を持ち、ジャワ族やタスケン・レイダーが生息する。ルーク・スカイウォーカーとアナキンの出身地として知られる。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">コルサント</div>
+        <div class="term-en">Coruscant</div>
+        <div class="term-ep">Ep.I The Phantom Menace</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">銀河の中心部にある都市惑星。惑星表面のすべてが都市で覆われており、銀河共和国・銀河帝国の首都として機能した。ジェダイ・テンプルもここに置かれた。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ホス</div>
+        <div class="term-en">Hoth</div>
+        <div class="term-ep">Ep.V The Empire Strikes Back</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">極寒の氷雪惑星。反乱同盟軍がエコー基地を設置していたが、帝国軍の猛攻により撤退を余儀なくされた。AT-ATウォーカーによる地上戦が印象的な舞台。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ダゴバ</div>
+        <div class="term-en">Dagobah</div>
+        <div class="term-ep">Ep.V The Empire Strikes Back</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">湿地と霧に覆われた辺境の惑星。ヨーダが帝国の目を逃れて隠棲した場所。ルークがフォースの修行のために訪れ、師弟関係が始まった。</div>
+      </div>
+    </div>
+
+    <!-- 種族 -->
+    <div class="section-label"><span>種族</span></div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ウーキー</div>
+        <div class="term-en">Wookiee</div>
+        <div class="term-ep">Ep.IV A New Hope</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">毛皮に覆われた大型の人型種族。チューバッカの出身種族として知られる。強靭な肉体と高い知性を持ち、宇宙船の整備にも長けている。独自の言語「シリーカ語」を話す。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">ハット族</div>
+        <div class="term-en">Hutt</div>
+        <div class="term-ep">Ep.IV A New Hope</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">大型で胴長の種族。銀河各地で犯罪組織を牛耳る存在として知られる。ジャバ・ザ・ハットがその代表格で、タトゥイーンを拠点に暗黒街を支配した。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">トワイレック</div>
+        <div class="term-en">Twi'lek</div>
+        <div class="term-ep">Ep.I The Phantom Menace</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">頭部から伸びる二本の触手「レッカ」が特徴的な種族。皮膚の色は様々で、銀河各地に広く分布する。アソーカ・タノの師匠であるジェダイ・マスターもこの種族。</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-left">
+        <div class="term-ja">グローグー</div>
+        <div class="term-en">Grogu</div>
+        <div class="term-ep">The Mandalorian S1</div>
+      </div>
+      <div class="entry-right">
+        <div class="term-desc">ヨーダと同じ謎多き種族の幼体。強いフォース感受性を持ち、マンダロリアンに保護された後に行動をともにする。通称「ベイビー・ヨーダ」として世界中で愛された存在。</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-logo">★ SW ★</div>
+    <p>© Fan Log — Star Wars is a trademark of Lucasfilm Ltd.</p>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('stars-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < 200; i++)
+        stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+          r: Math.random()*1.2, o: Math.random()*0.7+0.1,
+          t: Math.random()*0.02+0.005, d: Math.random()>0.5?1:-1 });
+    }
+    function drawStars() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      stars.forEach(s => {
+        s.o += s.t*s.d;
+        if(s.o>0.8||s.o<0.1) s.d*=-1;
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(220,210,180,${s.o})`; ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+    window.addEventListener('resize',()=>{resize();initStars();});
+    resize(); initStars(); drawStars();
+
+    // Filter（カテゴリ切替 — 現在はUI表示のみ）
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
